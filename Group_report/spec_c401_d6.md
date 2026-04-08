@@ -18,7 +18,7 @@ Justify: *Bắt buộc sử dụng Augmentation vì hậu quả của việc sai
 
 **Learning signal:**
 
-1. User correction đi vào đâu? *Bác sĩ chỉnh sửa trên bản nháp chuẩn SOAP trên HIS/EHR trước khi bấm lưu. Bản chỉnh sửa được feedback lại cho model để cá nhân hóa từ vựng và phong cách từng bác sĩ.*
+1. User correction đi vào đâu? *Bác sĩ chỉnh sửa trên bản nháp chuẩn SOAP trên HIS/EHR trước khi bấm lưu. Bản chỉnh sửa được sẽ được lưu lại và feedback lại cho agent để cho ra kết quả tốt hơn.*
 2. Product thu signal gì để biết tốt lên hay tệ đi? *Thời gian thao tác chỉnh sửa của bác sĩ giảm từ 30s xuống 5-10s. Tỷ lệ chỉnh sửa bản nháp (Edit Rate).* 
 3. Data thuộc loại nào? ☑ User-specific (phong cách từng bác sĩ) · ☑ Domain-specific (ngôn ngữ y khoa JCI) · ☐ Real-time · ☑ Human-judgment · ☐ Khác: ___
    Có marginal value không? (Model đã biết cái này chưa?) *Có, model sẽ cải thiện rất nhiều sau khi học được cách viết và chẩn đoán đặc thù của 1 bác sĩ theo thời gian.*
@@ -36,7 +36,7 @@ Justify: *Bắt buộc sử dụng Augmentation vì hậu quả của việc sai
 | Happy — AI đúng, tự tin | User thấy gì? Flow kết thúc ra sao? | *Bảng EHR điền sẵn S-O-A-P đầy đủ, chính xác. Các chỉ định HIS và toa thuốc có sẵn. Bác sĩ tốn 10s lướt và ấn "Duyệt".* |
 | Low-confidence — AI không chắc | System báo "không chắc" bằng cách nào? User quyết thế nào? | *AI highlight hoặc để (??) ở các cụm từ chuyên khoa/triệu chứng nghe không rõ. Bác sĩ chủ động điền thủ công phần đó.* |
 | Failure — AI sai | User biết AI sai bằng cách nào? Recover ra sao? | *Thiếu thông tin bệnh nhân nói hoặc chẩn đoán bị sai lệch. Bác sĩ thấy ngay khi đọc lướt → gõ đè lại hoặc xóa đoạn sai trước khi Lưu EHR.* |
-| Correction — user sửa | User sửa bằng cách nào? Data đó đi vào đâu? | *Sửa trực tiếp text field SOAP/đơn thuốc. Data ghi nhận lại (diff text) đi vào "Continuous Learning engine" để tinh chỉnh AI agent cá nhân hóa cho bác sĩ.* |
+| Correction — user sửa | User sửa bằng cách nào? Data đó đi vào đâu? | *Sửa trực tiếp text field SOAP/đơn thuốc. Data ghi nhận lại (diff text) đi vào "Continuous Learning engine" để tinh chỉnh AI agent.* |
 
 
 ---
