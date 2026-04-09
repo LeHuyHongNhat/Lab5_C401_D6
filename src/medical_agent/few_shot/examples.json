@@ -1,0 +1,25 @@
+[
+  {
+    "input": "Tôi bị đau đầu và chóng mặt 2 ngày nay.",
+    "output": {
+      "patient": {
+        "name": null,
+        "dob": null
+      },
+      "visit": {
+        "ngay_kham": null,
+        "benh_su": null,
+        "ly_do_kham": "Đau đầu, chóng mặt",
+        "trieu_chung": "Đau đầu; chóng mặt",
+        "kham_lam_sang": {
+          "nhan_xet_chung": null
+        },
+        "xet_nghiem": [],
+        "chan_doan": "Đau đầu",
+        "huong_dieu_tri": "Nghỉ ngơi",
+        "dan_do": "Theo dõi thêm",
+        "ngay_tai_kham": null
+      }
+    }
+  }
+]
