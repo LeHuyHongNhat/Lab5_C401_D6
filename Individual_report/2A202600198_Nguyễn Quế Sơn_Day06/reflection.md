@@ -1,4 +1,4 @@
-# Individual reflection — Nguyễn Quang Sơn (sonnq)
+# Individual reflection — Nguyễn Quế Sơn (sonnq)
 
 ## 1. Role cụ thể
 **Frontend Developer & UI/UX Designer**. Toàn quyền phụ trách luồng trải nghiệm ở phía người dùng, thiết kế giao diện (UI) và tối ưu hóa hệ thống tương tác (UX) cho ứng dụng Clinical Scribe AI.
