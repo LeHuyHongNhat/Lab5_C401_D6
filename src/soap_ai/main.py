@@ -2,7 +2,7 @@ import os
 import json
 from openai import OpenAI
 from dotenv import load_dotenv
-from tool.soap_ai.utils.formatter import validate_soap
+from soap_ai.utils.formatter import validate_soap
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 

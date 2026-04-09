@@ -1,0 +1,10 @@
+Bệnh nhân: Chào bác sĩ, gần đây em hay bị đau đầu âm ỉ, đặc biệt vào buổi chiều, và thỉnh thoảng chóng mặt.
+Bác sĩ: Vậy à, bạn có kèm theo buồn nôn hoặc mờ mắt không?
+Bệnh nhân: Không, chỉ đau đầu và đôi lúc chóng mặt thôi. Hôm qua em cũng thức khuya làm việc và uống cà phê khá nhiều.
+Bác sĩ: Hiểu rồi, triệu chứng gợi ý có thể căng thẳng, thiếu ngủ hoặc mệt mỏi. Cần theo dõi huyết áp và nhịp tim thường xuyên.
+Bệnh nhân: Ngoài ra, em còn muốn đi chơi biển cuối tuần, không biết có ảnh hưởng gì không?
+Bác sĩ: Đi chơi bình thường, nhưng nên nghỉ ngơi đủ trước chuyến đi, mang nước và hạn chế thức khuya.
+Bệnh nhân: Em cũng hay ăn vặt khuya, có nên thay đổi không?
+Bác sĩ: Nên hạn chế ăn vặt khuya, ăn uống đầy đủ, cân bằng dinh dưỡng.
+Bệnh nhân: Cảm ơn bác sĩ, em sẽ sắp xếp lại lịch sinh hoạt.
+Bác sĩ: Không có gì, theo dõi triệu chứng đau đầu, đảm bảo ngủ đủ, giảm căng thẳng và duy trì lối sống lành mạnh.
