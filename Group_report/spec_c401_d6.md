@@ -69,10 +69,10 @@ Nếu sai ngược lại thì chuyện gì xảy ra? *Nếu optimize precision n
 
 |   | Conservative | Realistic | Optimistic |
 |---|-------------|-----------|------------|
-| **Assumption** | *100 bác sĩ dùng, giảm 3 phút/ca* | *500 bác sĩ dùng, giảm 4 phút/ca, tăng doanh thu từ mã hóa bệnh tật (ICD-10)* | *Trọng tâm toàn Vinmec, giảm 4.5 phút/ca, tăng 2 bệnh nhân VIP/bác sĩ/ngày* |
-| **Cost** | *Chi phí server inference, build hệ thống* | *Phát triển app tích hợp HIS hoàn chỉnh, fine-tune* | *Tích hợp voice + app bệnh nhân, cloud chi phí cao.* |
-| **Benefit** | *Bác sĩ bớt 1h gõ máy/ngày. Giảm "Pajama time"* | *Bác sĩ khám thêm 1 ca/buổi. Hồ sơ đủ chuẩn JCI, giảm tỷ lệ xuất toán BHYT.* | *CSAT/NPS tối đa, doanh thu mỗi bác sĩ tăng 10-15%. Không còn tình trạng bác sĩ kiệt sức.* |
-| **Net** | *Dương nhẹ nhờ cải thiện vận hành nội bộ* | *Siêu lợi nhuận từ khám thêm & claim bảo hiểm chuẩn xác* | *Thay đổi diện mạo dịch vụ khám bệnh Premium* |
+| **Assumption** | Độ chính xác ban đầu thấp, áp dụng chậm. AI thường xuyên nghe thiếu hoặc lầm lẫn thuật ngữ (Zero-edit rate < 30%). Bác sĩ tốn thời gian sửa nhiều, chỉ ~50 bác sĩ kiên nhẫn dùng thử. | Độ chính xác trung bình khá, áp dụng vừa. AI đáp ứng tốt đa số các ca bệnh thông thường. Bác sĩ bớt được 3-4 phút/ca. Khoảng 300 bác sĩ sử dụng thường xuyên. | Độ chính xác cao, Flywheel hoạt động mạnh. AI cá nhân hóa hoàn hảo theo từng bác sĩ (Zero-edit rate > 80%). Triển khai toàn hệ thống Vinmec, giảm 4.5 phút gõ hồ sơ/ca. |
+| **Cost** | Chi phí cố định build hệ thống ban đầu + Chi phí suy luận (inference API) + Nhân sự vận hành để đánh giá và fix lỗi liên tục. | Chi phí tích hợp sâu vào HIS + Tăng chi phí suy luận (do lượng dùng tăng) + Chi phí Fine-tune model định kỳ hàng tháng. | Hạ tầng Cloud lưu trữ audio lớn + Chi phí tính toán cực cao để duy trì vòng lặp Continuous Learning thời gian thực. |
+| **Benefit** | Bác sĩ làm quen với AI. Giảm được 1 phần nhỏ "Pajama time" nhưng chưa mang lại hiệu quả kinh tế rõ rệt cho bệnh viện. | Bác sĩ khám thêm 1 ca/buổi. Hồ sơ y khoa đầy đủ, chuẩn JCI. Giảm tỷ lệ xuất toán BHYT (do thiếu sót hồ sơ) xuống mức rất thấp. | Giải quyết triệt để vấn đề "Burnout" của bác sĩ. CSAT/NPS của bệnh nhân tối đa. Doanh thu mỗi bác sĩ tăng 10-15% nhờ tối ưu thời gian. |
+| **Net** | Hòa vốn hoặc Lỗ nhẹ (do chi phí maintain cao hơn lợi ích tiết kiệm thời gian). Bắt buộc phải thu thập data để cải thiện model | Lãi tốt nhờ tiết kiệm chi phí vận hành, claim bảo hiểm chuẩn xác và tối ưu thời gian làm việc của bác sĩ. | Siêu lợi nhuận. Định hình lại tiêu chuẩn dịch vụ khám bệnh Premium, tạo lợi thế cạnh tranh độc quyền về Data. |
 
 **Kill criteria:** *Khi nào nên dừng? Tỉ lệ bác sĩ tắt AI và quay lại gõ tay thủ công > 40%; Hoặc xảy ra sự cố sai lệch y khoa nghiêm trọng không thể khắc phục cấu trúc.*
 
