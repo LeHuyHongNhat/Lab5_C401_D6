@@ -204,4 +204,85 @@ python main.py
 
 ---
 
+## Hướng dẫn cài đặt & chạy
+
+### Bước 1 — Clone và cài dependencies
+
+```bash
+git pull origin Khaidz
+
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+# Mac/Linux
+source venv/bin/activate
+
+# Cài cho audio pipeline (Whisper + pyannote + torch ~2GB)
+pip install -r requirements.txt
+
+# Cài cho medical agent (OpenAI + Pydantic)
+pip install -r medical_agent/requirements.txt
+```
+
+> **Máy có CUDA GPU:** thay dòng torch trong `requirements.txt` bằng:
+> ```bash
+> pip install torch --index-url https://download.pytorch.org/whl/cu118
+> ```
+
+---
+
+### Bước 2 — Cấu hình API keys
+
+**OpenAI (cho medical agent):**
+```bash
+cp medical_agent/.env.example medical_agent/.env
+# Mở file medical_agent/.env và điền:
+# OPENAI_API_KEY=sk-proj-xxxxxxxxxxxx
+```
+
+**HuggingFace (cho pyannote diarization — chỉ cần khi chạy Mode B audio):**
+1. Tạo tài khoản tại huggingface.co
+2. Vào `huggingface.co/pyannote/speaker-diarization-3.1` → bấm **Agree and access**
+3. Lấy token tại `huggingface.co/settings/tokens`
+4. Truyền vào lệnh chạy: `--hf-token hf_xxx`
+
+---
+
+### Bước 3 — Chạy
+
+**A. Text demo (không cần GPU, không cần API key):**
+```bash
+# Windows
+PYTHONIOENCODING=utf-8 python spec/audio_simulation.py --mode text --scenario 3
+
+# Xem danh sách 4 scenarios
+PYTHONIOENCODING=utf-8 python spec/audio_simulation.py --list
+```
+
+**B. Audio thật với Whisper (cần GPU + HF token):**
+```bash
+python spec/audio_simulation.py --mode audio --file recording.wav --hf-token hf_xxx
+```
+
+**C. Medical Agent (cần OpenAI API key):**
+```bash
+python medical_agent/main.py
+# Output lưu tại: medical_agent/output/record_<session_id>.json
+```
+
+**D. Chạy tests:**
+```bash
+PYTHONIOENCODING=utf-8 python -m pytest spec/test_pipeline.py -v
+# Kết quả mong đợi: 18 passed
+```
+
+**E. Chạy Whisper trên Google Colab (không có GPU local):**
+- Upload file `colab_whisper_pipeline.ipynb` lên [colab.research.google.com](https://colab.research.google.com)
+- Chọn `Runtime → Change runtime type → T4 GPU`
+- Chạy từng cell theo thứ tự
+- Download `raw_transcript_colab.json` → copy vào `medical_agent/input/raw_transcript.json` → chạy bước C
+
+---
+
 _Cập nhật: 09/04/2026 — Khải (Data Pipeline & Audio Simulation)_
