@@ -1,0 +1,24 @@
+{
+  "session_id": "VNM-20260409-001",
+  "patient_id": "BN-2026-00001",
+  "recorded_at": "2026-04-09T09:30:00",
+  "turns": [
+    { "speaker": "doctor",  "text": "Chào anh, hôm nay anh đến khám vì lý do gì?" },
+    { "speaker": "patient", "text": "Dạ tôi tên Nguyễn Văn A, tôi bị đau đầu và mất ngủ khoảng 2 tuần nay." },
+    { "speaker": "doctor",  "text": "Anh sinh năm bao nhiêu và ở đâu?" },
+    { "speaker": "patient", "text": "Dạ tôi sinh năm 1990, ở 123 Nguyễn Trãi, quận 1 TP.HCM." },
+    { "speaker": "doctor",  "text": "Hôm nay anh đến khám vì lý do gì?" },
+    { "speaker": "patient", "text": "Dạ tôi bị đau đầu và mất ngủ khoảng 2 tuần nay, kèm theo hay lo lắng, bồn chồn không yên." },
+    { "speaker": "doctor",  "text": "Anh có bị đau đầu cả hai bên hay chỉ một bên?" },
+    { "speaker": "patient", "text": "Dạ đau cả hai bên thái dương, đặc biệt buổi chiều tối hay bị hơn." },
+    { "speaker": "doctor",  "text": "Ngủ thì sao, anh khó vào giấc hay hay thức dậy giữa đêm?" },
+    { "speaker": "patient", "text": "Dạ khó vào giấc lắm bác sĩ. Nằm xuống mà cứ suy nghĩ lung tung, mãi mới ngủ được." },
+    { "speaker": "doctor",  "text": "Anh có cảm thấy buồn, mất hứng thú với công việc không?" },
+    { "speaker": "patient", "text": "Không buồn lắm bác sĩ, chủ yếu là hay lo lắng, dễ bị căng thẳng." },
+    { "speaker": "doctor",  "text": "Tôi sẽ khám lâm sàng. Anh tỉnh táo, tiếp xúc tốt. Tư duy mạch lạc, không có ý tưởng bất thường. Tri giác không có ảo giác. Cảm xúc lo âu nhẹ. Hành vi hợp tác." },
+    { "speaker": "doctor",  "text": "Tôi chẩn đoán anh bị rối loạn lo âu lan toả. Tôi sẽ cho anh làm thêm xét nghiệm công thức máu và điện giải đồ để loại trừ nguyên nhân thực thể." },
+    { "speaker": "doctor",  "text": "Về điều trị, tôi sẽ kết hợp liệu pháp nhận thức hành vi và thuốc nhóm SSRI liều thấp. Anh uống thuốc đều đặn nhé." },
+    { "speaker": "doctor",  "text": "Anh cần tránh căng thẳng, ngủ đúng giờ, hạn chế cà phê và điện thoại trước khi ngủ. Hẹn anh tái khám ngày 23 tháng 4 này nhé." },
+    { "speaker": "patient", "text": "Dạ cảm ơn bác sĩ." }
+  ]
+}
