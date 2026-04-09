@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from 'react'
 import type { KhamLamSang, MedicalRecord, PatientInfo, VisitInfo } from '../types/medicalRecord'
+import { transcribeAudio, saveRecord } from '../services/api'
 
 export type Speaker = 'doctor' | 'patient'
 
@@ -19,47 +20,19 @@ export interface TranscriptTurn {
   text: string
 }
 
-const scriptedTurns: TranscriptTurn[] = [
-  { speaker: 'doctor', text: 'Anh/chị đến khám vì lý do gì hôm nay?' },
-  { speaker: 'patient', text: 'Tôi đau bụng vùng thượng vị và buồn nôn khoảng 3 ngày.' },
-  { speaker: 'doctor', text: 'Cơn đau tăng sau ăn hay lúc đói?' },
-  { speaker: 'patient', text: 'Đau tăng sau ăn đồ chua cay, đôi lúc ợ chua.' },
-  { speaker: 'doctor', text: 'Tôi sẽ chỉ định nội soi và xét nghiệm máu để đánh giá thêm.' },
-]
+// Patient ID được truyền từ hệ thống đăng ký bệnh viện
+const CURRENT_PATIENT_ID = 'BN-2026-00001'
 
-const initialMedicalRecord: MedicalRecord = {
-  patient: {
-    ho_ten: 'Nguyễn Văn A',
-    gioi_tinh: 'Nam',
-    ngay_sinh: '1988-05-20',
-    dia_chi: 'Q. Bình Thạnh, TP.HCM',
-    patient_id: 'BN-2026-00001',
-  },
-  visit: {
-    ngay_kham: '2026-04-09',
-    benh_su: 'Chưa ghi nhận dị ứng thuốc.',
-    ly_do_kham: 'Đau bụng vùng thượng vị 3 ngày, buồn nôn.',
-    trieu_chung: 'Đau tăng sau ăn đồ chua cay, đôi lúc ợ chua.',
-    kham_lam_sang: {
-      nhan_xet_chung: 'Tỉnh táo, tiếp xúc tốt, sinh hiệu ổn định.',
-      cam_xuc: 'Lo lắng nhẹ vì đau kéo dài.',
-      tu_duy: 'Mạch lạc, trả lời đúng trọng tâm.',
-      tri_giac: 'Không ghi nhận rối loạn tri giác/ảo giác.',
-      hanh_vi: 'Hợp tác khám, hành vi phù hợp.',
-    },
-    xet_nghiem: ['Nội soi dạ dày tá tràng', 'Xét nghiệm máu cơ bản'],
-    chan_doan: 'Trào ngược dạ dày thực quản (GERD), theo dõi viêm dạ dày.',
-    chan_doan_icd: 'K21.9',
-    huong_dieu_tri: 'Pantoprazole 40mg uống buổi sáng trước ăn 30 phút.',
-    dan_do: 'Kiêng đồ chua cay, tái khám sau 2 tuần. Hướng dẫn dùng thuốc: sau khi chăn trâu (??).',
-    ngay_tai_kham: '2026-04-23',
-  },
+const emptyMedicalRecord: MedicalRecord = {
+  patient: { patient_id: CURRENT_PATIENT_ID },
+  visit: {},
 }
 
 interface ClinicalScribeContextValue {
   showToast: boolean
   isRecording: boolean
   isProcessing: boolean
+  processingError: string | null
   showSoap: boolean
   transcriptTurns: TranscriptTurn[]
   medicalRecordDraft: MedicalRecord
@@ -69,6 +42,7 @@ interface ClinicalScribeContextValue {
   setShowToast: (open: boolean) => void
   handleStartRecording: () => void
   handleStopAndProcess: () => void
+  handleSaveRecord: () => Promise<void>
   updatePatientField: (field: keyof PatientInfo, value: string) => void
   updateVisitField: (field: keyof VisitInfo, value: string | string[] | KhamLamSang) => void
   updateKhamLamSangField: (field: keyof KhamLamSang, value: string) => void
@@ -84,23 +58,28 @@ export function ClinicalScribeProvider({ children }: { children: ReactNode }) {
   const [showToast, setShowToast] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [processingError, setProcessingError] = useState<string | null>(null)
   const [transcriptTurns, setTranscriptTurns] = useState<TranscriptTurn[]>([])
-  const [medicalRecordDraft, setMedicalRecordDraft] = useState<MedicalRecord>(initialMedicalRecord)
+  const [medicalRecordDraft, setMedicalRecordDraft] = useState<MedicalRecord>(emptyMedicalRecord)
   const [showSoap, setShowSoap] = useState(false)
   const [canUndo, setCanUndo] = useState(false)
   const [canRedo, setCanRedo] = useState(false)
+  const [sessionId, setSessionId] = useState<string>('')
 
-  const soapHistoryRef = useRef<MedicalRecord[]>([initialMedicalRecord])
+  const soapHistoryRef = useRef<MedicalRecord[]>([emptyMedicalRecord])
   const soapHistoryIndexRef = useRef(0)
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const audioChunksRef = useRef<BlobPart[]>([])
   const recordingIntervalRef = useRef<number | null>(null)
-  const processingTimeoutRef = useRef<number | null>(null)
+
+  const recordingTimeRef = useRef(0)
+  const [recordingSeconds, setRecordingSeconds] = useState(0)
 
   const recordingTime = useMemo(() => {
-    const seconds = transcriptTurns.length * 8
-    const mm = String(Math.floor(seconds / 60)).padStart(2, '0')
-    const ss = String(seconds % 60).padStart(2, '0')
+    const mm = String(Math.floor(recordingSeconds / 60)).padStart(2, '0')
+    const ss = String(recordingSeconds % 60).padStart(2, '0')
     return `${mm}:${ss}`
-  }, [transcriptTurns.length])
+  }, [recordingSeconds])
 
   const syncHistoryFlags = useCallback(() => {
     setCanUndo(soapHistoryIndexRef.current > 0)
@@ -120,32 +99,17 @@ export function ClinicalScribeProvider({ children }: { children: ReactNode }) {
     syncHistoryFlags()
   }, [syncHistoryFlags])
 
+  // Timer đếm giây khi đang ghi âm
   useEffect(() => {
-    if (!isRecording) return
-
-    let idx = 0
+    if (!isRecording) {
+      setRecordingSeconds(0)
+      recordingTimeRef.current = 0
+      return
+    }
     recordingIntervalRef.current = window.setInterval(() => {
-      if (idx >= scriptedTurns.length) {
-        if (recordingIntervalRef.current) {
-          window.clearInterval(recordingIntervalRef.current)
-          recordingIntervalRef.current = null
-        }
-        return
-      }
-
-      const nextTurn = scriptedTurns[idx]
-      if (!nextTurn) {
-        if (recordingIntervalRef.current) {
-          window.clearInterval(recordingIntervalRef.current)
-          recordingIntervalRef.current = null
-        }
-        return
-      }
-
-      setTranscriptTurns((prev) => [...prev, nextTurn])
-      idx += 1
-    }, 1200)
-
+      recordingTimeRef.current += 1
+      setRecordingSeconds(recordingTimeRef.current)
+    }, 1000)
     return () => {
       if (recordingIntervalRef.current) {
         window.clearInterval(recordingIntervalRef.current)
@@ -154,30 +118,65 @@ export function ClinicalScribeProvider({ children }: { children: ReactNode }) {
     }
   }, [isRecording])
 
-  const handleStartRecording = useCallback(() => {
+  const handleStartRecording = useCallback(async () => {
     setTranscriptTurns([])
     setShowSoap(false)
     setIsProcessing(false)
-    setIsRecording(true)
+    setProcessingError(null)
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const mediaRecorder = new MediaRecorder(stream)
+      audioChunksRef.current = []
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data)
+      }
+
+      mediaRecorderRef.current = mediaRecorder
+      mediaRecorder.start(500) // gửi chunk mỗi 500ms
+      setIsRecording(true)
+
+      // Tạo session ID mới cho mỗi lần ghi
+      const newSessionId = `VNM-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Date.now().toString().slice(-6)}`
+      setSessionId(newSessionId)
+    } catch (err) {
+      setProcessingError('Không thể truy cập microphone. Vui lòng kiểm tra quyền truy cập.')
+    }
   }, [])
 
-  const handleStopAndProcess = useCallback(() => {
+  const handleStopAndProcess = useCallback(async () => {
+    const recorder = mediaRecorderRef.current
+    if (!recorder) return
+
     setIsRecording(false)
     setIsProcessing(true)
+    setProcessingError(null)
 
-    if (processingTimeoutRef.current) {
-      window.clearTimeout(processingTimeoutRef.current)
-      processingTimeoutRef.current = null
-    }
+    // Dừng recorder và chờ onstop
+    await new Promise<void>((resolve) => {
+      recorder.onstop = () => resolve()
+      recorder.stop()
+      recorder.stream.getTracks().forEach((t) => t.stop())
+    })
 
-    processingTimeoutRef.current = window.setTimeout(() => {
-      setMedicalRecordDraft(initialMedicalRecord)
+    try {
+      const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+      const result = await transcribeAudio(audioBlob, CURRENT_PATIENT_ID, sessionId)
+
+      const record: MedicalRecord = result.medical_record
+      setTranscriptTurns(result.transcript as TranscriptTurn[])
+      setMedicalRecordDraft(record)
       setShowSoap(true)
+      resetSoapHistory(record)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Lỗi không xác định'
+      setProcessingError(msg)
+      setShowSoap(false)
+    } finally {
       setIsProcessing(false)
-      resetSoapHistory(initialMedicalRecord)
-      processingTimeoutRef.current = null
-    }, 2200)
-  }, [resetSoapHistory])
+    }
+  }, [sessionId, resetSoapHistory])
 
   const updatePatientField = useCallback(
     (field: keyof PatientInfo, value: string) => {
@@ -265,32 +264,47 @@ export function ClinicalScribeProvider({ children }: { children: ReactNode }) {
   )
 
   const handleCancelCase = useCallback(() => {
+    // Dừng recorder nếu đang ghi
+    const recorder = mediaRecorderRef.current
+    if (recorder && recorder.state !== 'inactive') {
+      recorder.stop()
+      recorder.stream.getTracks().forEach((t) => t.stop())
+    }
+    mediaRecorderRef.current = null
+    audioChunksRef.current = []
+
     setTranscriptTurns([])
     setShowSoap(false)
     setIsRecording(false)
     setIsProcessing(false)
-    setMedicalRecordDraft(initialMedicalRecord)
+    setProcessingError(null)
+    setMedicalRecordDraft(emptyMedicalRecord)
 
     if (recordingIntervalRef.current) {
       window.clearInterval(recordingIntervalRef.current)
       recordingIntervalRef.current = null
     }
 
-    if (processingTimeoutRef.current) {
-      window.clearTimeout(processingTimeoutRef.current)
-      processingTimeoutRef.current = null
-    }
-
-    resetSoapHistory(initialMedicalRecord)
+    resetSoapHistory(emptyMedicalRecord)
   }, [resetSoapHistory])
+
+  const handleSaveRecord = useCallback(async () => {
+    try {
+      await saveRecord(sessionId, medicalRecordDraft)
+      setShowToast(true)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Lỗi khi lưu bệnh án'
+      setProcessingError(msg)
+    }
+  }, [sessionId, medicalRecordDraft])
 
   useEffect(() => {
     return () => {
-      if (recordingIntervalRef.current) {
-        window.clearInterval(recordingIntervalRef.current)
-      }
-      if (processingTimeoutRef.current) {
-        window.clearTimeout(processingTimeoutRef.current)
+      if (recordingIntervalRef.current) window.clearInterval(recordingIntervalRef.current)
+      const recorder = mediaRecorderRef.current
+      if (recorder && recorder.state !== 'inactive') {
+        recorder.stop()
+        recorder.stream.getTracks().forEach((t) => t.stop())
       }
     }
   }, [])
@@ -314,6 +328,7 @@ export function ClinicalScribeProvider({ children }: { children: ReactNode }) {
       showToast,
       isRecording,
       isProcessing,
+      processingError,
       showSoap,
       transcriptTurns,
       medicalRecordDraft,
@@ -323,6 +338,7 @@ export function ClinicalScribeProvider({ children }: { children: ReactNode }) {
       setShowToast,
       handleStartRecording,
       handleStopAndProcess,
+      handleSaveRecord,
       updatePatientField,
       updateVisitField,
       updateKhamLamSangField,
@@ -335,11 +351,13 @@ export function ClinicalScribeProvider({ children }: { children: ReactNode }) {
       canRedo,
       canUndo,
       handleCancelCase,
+      handleSaveRecord,
       handleStartRecording,
       handleStopAndProcess,
       isProcessing,
       isRecording,
       medicalRecordDraft,
+      processingError,
       recordingTime,
       redoSoap,
       showSoap,

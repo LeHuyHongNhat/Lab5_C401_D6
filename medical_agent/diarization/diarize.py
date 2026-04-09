@@ -17,7 +17,7 @@ Cách dùng:
   python diarize.py --input audio/session.wav --method llm ...
 """
 
-import argparse
+import argparsec
 import json
 import os
 import sys

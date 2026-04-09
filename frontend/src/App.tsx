@@ -17,6 +17,7 @@ function App() {
     showToast,
     isRecording,
     isProcessing,
+    processingError,
     showSoap,
     transcriptTurns,
     medicalRecordDraft,
@@ -26,6 +27,7 @@ function App() {
     setShowToast,
     handleStartRecording,
     handleStopAndProcess,
+    handleSaveRecord,
     updatePatientField,
     updateVisitField,
     updateKhamLamSangField,
@@ -104,7 +106,7 @@ function App() {
 
   const handleConfirmAction = () => {
     if (confirmType === 'save') {
-      setShowToast(true)
+      handleSaveRecord()
       setConfirmType(null)
       return
     }
@@ -247,12 +249,20 @@ function App() {
             <div className="grid flex-1 gap-4 p-4 md:grid-cols-2">
               {isProcessing ? (
                 <article className="rounded-lg border border-gray-200 bg-white p-4 md:col-span-2">
-                  <p className="mb-3 text-sm font-medium text-gray-700">AI đang tổng hợp SOAP...</p>
+                  <p className="mb-3 text-sm font-medium text-gray-700">
+                    AI đang xử lý: STT → Diarization → Medical Agent...
+                  </p>
                   <Skeleton lines={5} />
                 </article>
               ) : null}
 
-              {!isProcessing && !showSoap ? (
+              {!isProcessing && processingError ? (
+                <article className="rounded-lg border border-red-200 bg-red-50 p-4 md:col-span-2">
+                  <p className="text-sm font-medium text-red-700">Lỗi xử lý: {processingError}</p>
+                </article>
+              ) : null}
+
+              {!isProcessing && !showSoap && !processingError ? (
                 <article className="flex min-h-36 items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 p-4 text-center text-sm text-gray-500 md:col-span-2">
                   Chưa có kết quả SOAP. Hãy ghi âm và bấm “Kết thúc & Trích xuất”.
                 </article>
