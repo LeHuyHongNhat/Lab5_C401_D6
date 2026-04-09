@@ -75,9 +75,8 @@ def generate_json(user_input):
 # ==============================
 def enrich_icd(data):
     diagnosis = data["visit"].get("chan_doan")
-
+    data["visit"]["chan_doan_icd"] = None
     if not diagnosis:
-        data["visit"]["chan_doan_icd"] = None
         return data
 
     icd_codes = []
