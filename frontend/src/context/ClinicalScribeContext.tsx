@@ -86,7 +86,7 @@ export function ClinicalScribeProvider({ children }: { children: ReactNode }) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [transcriptTurns, setTranscriptTurns] = useState<TranscriptTurn[]>([])
   const [medicalRecordDraft, setMedicalRecordDraft] = useState<MedicalRecord>(initialMedicalRecord)
-  const [showSoap, setShowSoap] = useState(false)
+  const [showSoap, setShowSoap] = useState(true)
   const [canUndo, setCanUndo] = useState(false)
   const [canRedo, setCanRedo] = useState(false)
 
@@ -156,7 +156,6 @@ export function ClinicalScribeProvider({ children }: { children: ReactNode }) {
 
   const handleStartRecording = useCallback(() => {
     setTranscriptTurns([])
-    setShowSoap(false)
     setIsProcessing(false)
     setIsRecording(true)
   }, [])
@@ -171,13 +170,13 @@ export function ClinicalScribeProvider({ children }: { children: ReactNode }) {
     }
 
     processingTimeoutRef.current = window.setTimeout(() => {
-      setMedicalRecordDraft(initialMedicalRecord)
+      // Simulate AI generating data - just keep initial for mock
+      setMedicalRecordDraft((prev) => ({ ...prev }))
       setShowSoap(true)
       setIsProcessing(false)
-      resetSoapHistory(initialMedicalRecord)
       processingTimeoutRef.current = null
-    }, 2200)
-  }, [resetSoapHistory])
+    }, 1500)
+  }, [])
 
   const updatePatientField = useCallback(
     (field: keyof PatientInfo, value: string) => {
