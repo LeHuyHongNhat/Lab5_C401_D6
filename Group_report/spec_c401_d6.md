@@ -92,9 +92,13 @@ Nếu sai ngược lại thì chuyện gì xảy ra? *Nếu optimize precision n
 - **Augmentation (hỗ trợ cốt lõi):** AI lắng nghe suốt 15 phút, tự hoàn tất bản thảo hồ sơ y tế chuẩn SOAP với tốc độ 10-15s sau ca khám. Bác sĩ đứng vai trò "Duyệt" và chỉnh sửa.
 - **Workflow Automation:** Dựa trên "Plan" (Kế hoạch), AI tự soạn lệnh cận lâm sàng (ví dụ: Tạo phiếu Xét nghiệm máu, X-Quang trên HIS) và dịch thuật ngữ lập toa thuốc thành hướng dẫn dễ hiểu cho bệnh nhân.
 
-**Quality & Learning Flywheel (Continuous Learning)**
-- Tối ưu hóa **Recall**. Ghi nhận đủ mọi triệu chứng để bác sĩ không bị lọt thông tin.
-- Hệ thống có biên lai học hỏi (feedback loop) cực tốt: Khi bác sĩ sửa các bản thảo SOAP, model sẽ thu nhận thao tác này (Data: domain-specific & user-specific) để học phong cách hành văn và thói quen dùng thuốc của đích danh bác sĩ đó. Thời gian chỉnh sửa tương lai sẽ rút dần từ 30s xuống 5-10s.
+**Quality & Data Flywheel (Continuous Learning)**
+- Tối ưu hóa **Recall:** Thiết kế AI ưu tiên ghi nhận đầy đủ mọi triệu chứng và lời bệnh nhân (thà thừa để bác sĩ xóa, còn hơn bỏ sót thông tin quan trọng gây rủi ro y khoa).
+- **Cơ chế thu thập tín hiệu (Feedback Signals):** Hệ thống được thiết kế UX để bắt các tín hiệu giá trị cao từ bác sĩ:
+   - *Tín hiệu Sửa lỗi (Correction):* Thu thập chính xác vị trí bác sĩ sửa kết quả, xóa text, hoặc ghi đè quyết định của AI trên bản nháp SOAP.
+   - *Tín hiệu Ngầm (Implicit):* Hành động bác sĩ click chấp nhận (accept) các gợi ý.
+- **Xây dựng Dữ liệu Giá trị cao:** Quá trình thao tác trên sẽ tạo ra "Dữ liệu riêng user" (phong cách hành văn, thói quen kê đơn của đích danh bác sĩ), "Dữ liệu chuyên ngành" (thuật ngữ y khoa Vinmec) và "Dữ liệu đánh giá của người" (bác sĩ là chuyên gia đánh giá).
+- **Vòng lặp Data Flywheel & Lợi thế cạnh tranh:** Áp dụng luồng "Có user → Thu data → AI tốt hơn → Thu thêm data". Dữ liệu thực tế từ bác sĩ dùng hàng ngày sẽ được liên tục đưa về pipeline để AI học tiếp. AI sẽ ngày càng cá nhân hóa, giúp rút ngắn thời gian sửa từ 30s xuống 5-10s. Việc tích lũy vòng lặp data + model tinh chỉnh này chính là tài sản riêng, tạo ra rào cản cạnh tranh thực sự so với các API AI đại trà.
 
 **Risk chính & Mitigation:**
 - Môi trường nhiễu âm thu nhầm giọng người khác, AI tự bịa thông tin. Giảm thiểu bằng việc yêu cầu Bác sĩ duyệt một cách tường minh trước khi "Lưu vào hệ thống EHR" và cơ chế phát hiện hội thoại không rõ ràng (low-confidence flags).
