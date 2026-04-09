@@ -24,6 +24,7 @@ ENV/
 # Jupyter
 .ipynb_checkpoints/
 *.ipynb
+!colab_whisper_pipeline.ipynb
 
 # OS
 .DS_Store

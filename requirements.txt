@@ -1,0 +1,20 @@
+# AI Clinical Scribe Agent — Dependencies
+# Cài đặt: pip install -r requirements.txt
+
+# ── LLM & Agent ──────────────────────────────────────────────
+openai>=1.0.0
+langchain>=0.2.0
+anthropic>=0.25.0
+
+# ── STT: Whisper (HuggingFace, không phải openai-whisper) ────
+transformers>=4.40.0
+accelerate>=0.27.0
+torch>=2.0.0
+
+# ── Diarization ───────────────────────────────────────────────
+pyannote.audio>=3.1.0
+
+# ── Xử lý audio ───────────────────────────────────────────────
+librosa>=0.10.0
+soundfile>=0.12.0
+ffmpeg-python>=0.2.0

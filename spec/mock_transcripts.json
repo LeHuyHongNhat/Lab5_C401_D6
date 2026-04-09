@@ -1,0 +1,211 @@
+[
+  {
+    "scenario_id": "SCENARIO-01",
+    "scenario_name": "Happy Path — Lo âu lan toả, hội thoại rõ ràng",
+    "scenario_type": "happy_path",
+    "description": "Ca khám thuận lợi: bệnh nhân trình bày rõ ràng, không có nhiễu, bác sĩ hỏi có hệ thống. Expected output: SOAP đầy đủ, zero-edit.",
+    "session_id": "VNM-20260409-001",
+    "recorded_at": "2026-04-09T09:30:00",
+    "turns": [
+      { "speaker": "doctor",  "text": "Chào anh, anh tên gì, năm nay bao nhiêu tuổi?" },
+      { "speaker": "patient", "text": "Dạ chào bác sĩ, tôi tên Nguyễn Văn A, sinh năm 1990." },
+      { "speaker": "doctor",  "text": "Anh đến khám vì lý do gì hôm nay?" },
+      { "speaker": "patient", "text": "Dạ tôi bị đau đầu và mất ngủ khoảng 2 tuần nay rồi bác sĩ ơi. Kèm theo cũng hay lo lắng, bồn chồn." },
+      { "speaker": "doctor",  "text": "Đau đầu ở vị trí nào, đau như thế nào?" },
+      { "speaker": "patient", "text": "Dạ đau cả hai bên thái dương. Đặc biệt buổi chiều tối thì đau nhiều hơn." },
+      { "speaker": "doctor",  "text": "Mất ngủ thì anh khó vào giấc hay hay thức dậy giữa đêm?" },
+      { "speaker": "patient", "text": "Dạ khó vào giấc là chính. Nằm xuống mà suy nghĩ lung tung, không ngủ được." },
+      { "speaker": "doctor",  "text": "Anh có tiền sử bệnh gì không? Đang dùng thuốc gì không?" },
+      { "speaker": "patient", "text": "Dạ tôi có tăng huyết áp độ 1 từ năm 2024. Hiện tôi đang uống Amlodipine 5mg mỗi sáng. Không dị ứng thuốc gì." },
+      { "speaker": "doctor",  "text": "Anh làm nghề gì, công việc có áp lực không?" },
+      { "speaker": "patient", "text": "Dạ tôi làm kế toán, gần đây cuối năm tài chính nên khá căng thẳng." },
+      { "speaker": "doctor",  "text": "Tôi sẽ khám cho anh nhé. Anh tỉnh táo, tiếp xúc tốt. Cảm xúc có vẻ lo âu nhẹ. Tư duy mạch lạc, không có ý tưởng bất thường. Không có ảo giác." },
+      { "speaker": "doctor",  "text": "Tôi chẩn đoán anh bị rối loạn lo âu lan toả. Tôi sẽ cho anh làm xét nghiệm công thức máu và điện giải đồ để loại trừ nguyên nhân thực thể." },
+      { "speaker": "patient", "text": "Dạ vâng, tôi cần uống thuốc không bác sĩ?" },
+      { "speaker": "doctor",  "text": "Tôi sẽ kết hợp liệu pháp nhận thức hành vi và cho anh dùng thuốc nhóm SSRI liều thấp. Anh cần tránh căng thẳng, ngủ đúng giờ, hạn chế cà phê và điện thoại trước khi ngủ. Hai tuần nữa anh tái khám nhé." },
+      { "speaker": "patient", "text": "Dạ cảm ơn bác sĩ." }
+    ],
+    "expected_output": {
+      "patient": {
+        "ho_ten": "Nguyễn Văn A",
+        "gioi_tinh": "Nam",
+        "ngay_sinh": "1990-01-01",
+        "cccd": null
+      },
+      "visit": {
+        "ly_do_kham": "Đau đầu và mất ngủ khoảng 2 tuần, kèm lo lắng, bồn chồn.",
+        "S_subjective": "Bệnh nhân nam 36 tuổi, kế toán, đau đầu 2 bên thái dương tăng về chiều tối, mất ngủ khó vào giấc kèm suy nghĩ nhiều, lo âu bồn chồn trong 2 tuần. Tiền sử tăng huyết áp độ 1 (2024), đang dùng Amlodipine 5mg/ngày. Không dị ứng thuốc. Stress công việc cuối năm tài chính.",
+        "O_objective": "Tỉnh táo, tiếp xúc tốt. Cảm xúc lo âu nhẹ. Tư duy mạch lạc, không có ý tưởng bất thường. Không ảo giác. Hành vi hợp tác.",
+        "A_assessment": "Rối loạn lo âu lan toả",
+        "chan_doan_icd": "F41.1",
+        "P_plan": "Xét nghiệm: Công thức máu, Điện giải đồ. Điều trị: Liệu pháp nhận thức hành vi + SSRI liều thấp. Dặn dò: Tránh căng thẳng, ngủ đúng giờ, hạn chế caffeine và điện thoại trước ngủ. Tái khám sau 2 tuần."
+      }
+    }
+  },
+
+  {
+    "scenario_id": "SCENARIO-02",
+    "scenario_name": "Low-confidence — Bệnh nhân nói nhỏ, câu không đầy đủ",
+    "scenario_type": "low_confidence",
+    "description": "Bệnh nhân cao tuổi, nói nhỏ, hay bỏ lửng câu. STT sẽ có đoạn thiếu. Agent cần FLAG (??) vào các trường không chắc chắn thay vì hallucinate.",
+    "session_id": "VNM-20260409-002",
+    "recorded_at": "2026-04-09T10:15:00",
+    "turns": [
+      { "speaker": "doctor",  "text": "Bác tên gì ạ, bác bao nhiêu tuổi?" },
+      { "speaker": "patient", "text": "Tôi tên... Trần Thị B... 68 tuổi." },
+      { "speaker": "doctor",  "text": "Bác đến khám vì sao hôm nay?" },
+      { "speaker": "patient", "text": "Dạ tôi... đau bụng mấy hôm nay. Đau vùng... trên rốn." },
+      { "speaker": "doctor",  "text": "Đau từ bao giờ, đau liên tục hay từng cơn?" },
+      { "speaker": "patient", "text": "Khoảng... 3 ngày. Đau từng... lúc thôi. Sau ăn thì..." },
+      { "speaker": "doctor",  "text": "Sau ăn thì đau hơn hay bớt hơn?" },
+      { "speaker": "patient", "text": "Hình như... đau hơn. Tôi không chắc." },
+      { "speaker": "doctor",  "text": "Bác có buồn nôn, nôn không? Đi cầu bình thường không?" },
+      { "speaker": "patient", "text": "Buồn nôn thì... có đôi khi. Đi cầu thì... bình thường tôi nghĩ vậy." },
+      { "speaker": "doctor",  "text": "Bác đang uống thuốc gì không?" },
+      { "speaker": "patient", "text": "Tôi uống... thuốc khớp. Tên thuốc thì tôi không nhớ. Con tôi mua cho." },
+      { "speaker": "doctor",  "text": "Bác có tiền sử bệnh dạ dày không?" },
+      { "speaker": "patient", "text": "Hồi trước có nghe nói... viêm dạ dày gì đó. Lâu rồi." },
+      { "speaker": "doctor",  "text": "Tôi sẽ khám bụng cho bác. Bụng mềm, ấn đau vùng thượng vị. Gan lách không to." },
+      { "speaker": "doctor",  "text": "Tôi nghi bác bị viêm loét dạ dày, có thể do thuốc kháng viêm. Sẽ cho bác nội soi dạ dày và xét nghiệm HP. Tạm thời dùng thuốc giảm axit." }
+    ],
+    "expected_output": {
+      "patient": {
+        "ho_ten": "Trần Thị B",
+        "gioi_tinh": "Nữ",
+        "ngay_sinh": "??",
+        "cccd": null
+      },
+      "visit": {
+        "ly_do_kham": "Đau bụng vùng thượng vị 3 ngày.",
+        "S_subjective": "Bệnh nhân nữ 68 tuổi, đau bụng vùng trên rốn (thượng vị) khoảng 3 ngày, từng cơn, có thể tăng sau ăn (?? bệnh nhân không chắc). Kèm buồn nôn đôi khi. Đại tiện bình thường. Đang dùng thuốc kháng viêm khớp (tên thuốc không rõ - ??). Tiền sử viêm dạ dày (thời điểm không xác định).",
+        "O_objective": "Bụng mềm, ấn đau vùng thượng vị. Gan lách không to.",
+        "A_assessment": "Viêm loét dạ dày, nghi do NSAIDs",
+        "chan_doan_icd": "K25",
+        "P_plan": "Nội soi dạ dày. Xét nghiệm Helicobacter pylori. Thuốc giảm axit (PPI). Ngưng thuốc kháng viêm nếu có thể (?? cần xác nhận loại thuốc với bệnh nhân/người nhà).",
+        "flags": [
+          "ngay_sinh: Bệnh nhân không cung cấp ngày sinh cụ thể",
+          "thuoc_khop: Tên thuốc NSAIDs không xác định — cần hỏi lại người nhà",
+          "dau_sau_an: Bệnh nhân không chắc chắn — cần confirm"
+        ]
+      }
+    }
+  },
+
+  {
+    "scenario_id": "SCENARIO-03",
+    "scenario_name": "Diarization Challenge — Người nhà chen vào, overlapping speech",
+    "scenario_type": "diarization_error_risk",
+    "description": "Người nhà (con gái bệnh nhân) có mặt trong phòng và chen vào hội thoại. Đây là test case cho failure mode #1. Agent phải gán nhãn đúng [doctor/patient/family] và không lẫn lộn thông tin nguồn.",
+    "session_id": "VNM-20260409-003",
+    "recorded_at": "2026-04-09T11:00:00",
+    "turns": [
+      { "speaker": "doctor",  "text": "Chào bác, bác tên gì ạ?" },
+      { "speaker": "patient", "text": "Tôi tên Lê Văn C, 72 tuổi." },
+      { "speaker": "doctor",  "text": "Bác đến vì lý do gì?" },
+      { "speaker": "patient", "text": "Tôi khó thở mấy ngày nay..." },
+      { "speaker": "family",  "text": "Bác sĩ ơi, ba tôi hay quên uống thuốc tim lắm. Hôm qua bỏ thuốc cả ngày đó." },
+      { "speaker": "doctor",  "text": "Bác đang uống thuốc tim gì vậy?" },
+      { "speaker": "patient", "text": "Tôi uống... Concor." },
+      { "speaker": "family",  "text": "Dạ Concor 5mg và Coversyl 5mg nữa bác sĩ. Tôi có hình chụp toa thuốc đây." },
+      { "speaker": "doctor",  "text": "Bác khó thở khi nằm xuống hay khi đi lại?" },
+      { "speaker": "patient", "text": "Khi nằm xuống khó thở hơn. Phải kê gối cao mới ngủ được." },
+      { "speaker": "family",  "text": "Hôm qua ba tôi còn bị phù chân nữa bác sĩ ơi, tôi thấy rõ ràng." },
+      { "speaker": "doctor",  "text": "Tôi sẽ khám tim phổi cho bác. Phổi có ran ẩm hai đáy. Tim nhịp không đều." },
+      { "speaker": "doctor",  "text": "Bác bị suy tim sung huyết có dấu hiệu mất bù. Tôi sẽ cho bác nhập viện theo dõi, chụp X-Quang ngực và siêu âm tim." }
+    ],
+    "diarization_notes": "CRITICAL: Thông tin thuốc (Concor 5mg + Coversyl 5mg) do NGƯỜI NHÀ cung cấp, KHÔNG phải bác sĩ. Agent phải ghi nhận nguồn là [family] trong trường benh_su. Phù chân cũng do người nhà báo cáo.",
+    "expected_output": {
+      "patient": {
+        "ho_ten": "Lê Văn C",
+        "gioi_tinh": "Nam",
+        "ngay_sinh": "1954-01-01",
+        "cccd": null
+      },
+      "visit": {
+        "ly_do_kham": "Khó thở vài ngày, phù chân (theo người nhà).",
+        "S_subjective": "Bệnh nhân nam 72 tuổi, khó thở tăng khi nằm, phải kê cao gối. Phù chân (người nhà ghi nhận). Tiền sử bệnh tim, đang dùng Concor 5mg và Coversyl 5mg (thông tin từ người nhà - có toa). Bỏ thuốc cả ngày hôm qua (người nhà báo cáo).",
+        "O_objective": "Phổi có ran ẩm hai đáy. Tim nhịp không đều.",
+        "A_assessment": "Suy tim sung huyết, dấu hiệu mất bù",
+        "chan_doan_icd": "I50.0",
+        "P_plan": "Nhập viện theo dõi. X-Quang ngực thẳng. Siêu âm tim. Điều chỉnh phác đồ thuốc tim.",
+        "flags": [
+          "DIARIZATION_WARNING: Thông tin thuốc Concor + Coversyl được cung cấp bởi người nhà, không phải bệnh nhân — cần xác minh với toa gốc",
+          "DIARIZATION_WARNING: Triệu chứng phù chân được báo cáo bởi người nhà — bác sĩ cần khám xác nhận"
+        ]
+      }
+    }
+  },
+
+  {
+    "scenario_id": "SCENARIO-04",
+    "scenario_name": "Medication Edge Case — Tên biệt dược tiếng Việt, STT dễ nhận sai",
+    "scenario_type": "medication_recognition",
+    "description": "Bác sĩ dùng nhiều tên biệt dược phổ biến tại VN. Test case cho failure mode #2. Agent phải map đúng sang INN và liều lượng chuẩn, FLAG các tên không map được.",
+    "session_id": "VNM-20260409-004",
+    "recorded_at": "2026-04-09T14:00:00",
+    "turns": [
+      { "speaker": "doctor",  "text": "Chị tên gì, bao nhiêu tuổi?" },
+      { "speaker": "patient", "text": "Dạ tôi tên Phạm Thị D, 45 tuổi." },
+      { "speaker": "doctor",  "text": "Chị đến vì sao hôm nay?" },
+      { "speaker": "patient", "text": "Dạ tôi bị sốt 2 ngày nay, ho nhiều, đau họng và sổ mũi." },
+      { "speaker": "doctor",  "text": "Sốt bao nhiêu độ, chị có đo không?" },
+      { "speaker": "patient", "text": "Dạ tôi đo thấy 38 độ 5." },
+      { "speaker": "doctor",  "text": "Chị có dị ứng thuốc không? Đang uống thuốc gì không?" },
+      { "speaker": "patient", "text": "Dạ tôi dị ứng Penicillin. Không uống thuốc gì thường xuyên." },
+      { "speaker": "doctor",  "text": "Tôi khám thấy họng đỏ, amidan sưng nhẹ, có dịch mũi trong. Phổi nghe bình thường." },
+      { "speaker": "doctor",  "text": "Chị bị viêm họng cấp do virus. Tôi kê cho chị Efferalgan 500 uống khi sốt trên 38 độ 5. Berodual xịt họng ngày 3 lần. Loratadin 10mg uống buổi sáng. Và Strepsils ngậm khi đau họng. Uống nhiều nước, nghỉ ngơi. 3 ngày nếu không đỡ thì quay lại khám." },
+      { "speaker": "patient", "text": "Dạ tôi cần kháng sinh không bác sĩ?" },
+      { "speaker": "doctor",  "text": "Chưa cần. Đây là virus, kháng sinh không có tác dụng. Nếu 3 ngày không đỡ hoặc sốt cao hơn thì mới cần cân nhắc." }
+    ],
+    "medication_mapping": [
+      {
+        "brand_name": "Efferalgan 500",
+        "inn": "Paracetamol",
+        "dose": "500mg",
+        "instruction": "Uống khi sốt > 38.5°C",
+        "stt_risk": "THẤP — tên phổ biến, STT thường nhận đúng"
+      },
+      {
+        "brand_name": "Berodual",
+        "inn": "Fenoterol + Ipratropium",
+        "dose": "xịt họng",
+        "instruction": "Ngày 3 lần",
+        "stt_risk": "CAO — STT hay transcribe thành 'Be rô đồ' hoặc 'Bê rô đun' — cần custom dictionary"
+      },
+      {
+        "brand_name": "Loratadin",
+        "inn": "Loratadine",
+        "dose": "10mg",
+        "instruction": "Uống buổi sáng",
+        "stt_risk": "TRUNG BÌNH — tên gần với INN, ít lỗi"
+      },
+      {
+        "brand_name": "Strepsils",
+        "inn": "Dichlorobenzyl alcohol + Amylmetacresol",
+        "dose": "viên ngậm",
+        "instruction": "Ngậm khi đau họng",
+        "stt_risk": "TRUNG BÌNH — STT hay nhận thành 'trep sill' hoặc 'strep xít'"
+      }
+    ],
+    "expected_output": {
+      "patient": {
+        "ho_ten": "Phạm Thị D",
+        "gioi_tinh": "Nữ",
+        "ngay_sinh": "1981-01-01",
+        "di_ung": "Penicillin"
+      },
+      "visit": {
+        "ly_do_kham": "Sốt 2 ngày, ho, đau họng, sổ mũi.",
+        "S_subjective": "Bệnh nhân nữ 45 tuổi, sốt 38.5°C, ho, đau họng, sổ mũi 2 ngày. Dị ứng Penicillin. Không dùng thuốc thường xuyên.",
+        "O_objective": "Họng đỏ, amidan sưng nhẹ, dịch mũi trong. Phổi nghe bình thường.",
+        "A_assessment": "Viêm họng cấp, nguyên nhân virus",
+        "chan_doan_icd": "J02.9",
+        "P_plan": "Paracetamol (Efferalgan) 500mg khi sốt > 38.5°C. Berodual (?? FLAG: cần xác nhận chỉ định xịt họng) ngày 3 lần. Loratadine 10mg sáng. Strepsils ngậm khi đau họng. Uống nhiều nước, nghỉ ngơi. Tái khám sau 3 ngày nếu không cải thiện.",
+        "flags": [
+          "MEDICATION_FLAG: Berodual (Fenoterol+Ipratropium) — thường dùng xịt phế quản, không phải xịt họng. Bác sĩ cần xác nhận chỉ định.",
+          "ALLERGY_ALERT: Bệnh nhân dị ứng Penicillin — không có thuốc Penicillin trong đơn, an toàn."
+        ]
+      }
+    }
+  }
+]
