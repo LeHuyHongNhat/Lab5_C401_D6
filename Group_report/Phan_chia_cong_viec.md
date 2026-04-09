@@ -4,7 +4,7 @@ KẾ HOẠCH HÀNH ĐỘNG HACKATHON — NHÓM C401_D6
 
 Vì cả nhóm đều mạnh về AI, chúng ta sẽ chia theo các module xử lý dữ liệu thay vì chia theo chức danh truyền thống.
 
-Nhật: Agent Architect & Lead
+Thành viên 1 - Nhật: Agent Architect & Lead
 
 Phụ trách luồng xử lý của Agent (Input -> Prompt -> Output).
 
@@ -12,7 +12,7 @@ Viết Spec phần 1 (Canvas) và phần 6 (Mini Spec).
 
 Kiểm soát sự thống nhất giữa các phần của Spec.
 
-Tấn: Prompt Engineer & Medical Logic
+Thành viên 2 - Tấn: Prompt Engineer & Medical Logic
 
 Thiết kế System Prompt cho SOAP (Subjective, Objective, Assessment, Plan).
 
@@ -20,7 +20,7 @@ Phụ trách Spec phần 2 (User Stories - 4 paths).
 
 Xây dựng bộ Few-shot examples từ dữ liệu y tế mẫu của Vinmec.
 
-Sơn: Frontend Developer (Vibe Coding)
+Thành viên 3 - Sơn: Frontend Developer (Vibe Coding)
 
 Sử dụng LLM (Cursor/v0/Claude) để code file React duy nhất.
 
@@ -28,7 +28,7 @@ Tích hợp giao diện với các logic xử lý text/audio từ các thành vi
 
 Chỉnh sửa CSS/Tailwind để đảm bảo UI đúng chuẩn Premium của Vinmec.
 
-Khải: Data Pipeline & Audio Simulation
+Thành viên 4 - Khải: Data Pipeline & Audio Simulation
 
 Xử lý giả lập luồng ghi âm (Audio processing simulation).
 
@@ -36,7 +36,7 @@ Chuẩn bị dữ liệu Input (Mock transcripts) cho nhiều tình huống khá
 
 Viết Spec phần 4 (Top 3 failure modes).
 
-Thành: AI Evaluator & Metrics
+Thành viên 5 - Thành: AI Evaluator & Metrics
 
 Thiết kế bộ chỉ số đánh giá (LLM-as-a-judge) để đo lường chất lượng SOAP đầu ra.
 
@@ -44,11 +44,13 @@ Viết Spec phần 3 (Eval metrics + threshold).
 
 Thực hiện test các trường hợp Corner Cases.
 
-Khánh: Business Intelligence & Presentation
+Thành viên 6 - Khánh: Business Intelligence & Presentation
 
 Phụ trách Spec phần 5 (ROI 3 kịch bản).
 
 Thiết kế Poster/Slides bằng công cụ AI (Gamma/Canva).
+
+Làm mock prototype bằng HTML, hỗ trợ thiết kế UX/UI.
 
 Viết script demo và chuẩn bị narrative cho bài thuyết trình.
 
