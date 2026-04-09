@@ -39,7 +39,7 @@ const initialSoap: SoapDraft = {
   objective: 'Ấn đau nhẹ vùng thượng vị, không phản ứng thành bụng, sinh hiệu ổn định.',
   assessment: 'K21.9 - Trào ngược dạ dày thực quản (GERD), theo dõi viêm dạ dày.',
   plan:
-    'Pantoprazole 40mg mỗi sáng trước ăn. Dặn dò kiêng đồ chua cay, tái khám sau 2 tuần. Hướng dẫn dùng thuốc: sau ăn 1 tiếng.',
+    'Pantoprazole 40mg mỗi sáng trước ăn. Dặn dò kiêng đồ chua cay, tái khám sau 2 tuần. Hướng dẫn dùng thuốc: sau khi chăn trâu (??).',
 }
 
 interface ClinicalScribeContextValue {
