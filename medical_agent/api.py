@@ -1,16 +1,23 @@
 """
 FastAPI server — bridge giữa React UI và medical_agent.
-Chạy: uvicorn api:app --reload --port 8000
+Chạy: uvicorn api:app --reload --port 8000  (từ thư mục medical_agent/)
+
+Endpoints:
+  GET  /api/health           → health check
+  POST /api/transcribe       → audio → Whisper STT → LLM diarization → SOAP
+  POST /api/process          → turns JSON → SOAP (dùng cho Mock mode)
+  POST /api/records/save     → lưu hồ sơ + correction log
 """
 
-import sys
+import json
 import os
+import sys
 import tempfile
 from pathlib import Path
 from typing import List
 from datetime import datetime
 
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -19,18 +26,24 @@ sys.path.insert(0, str(Path(__file__).parent))
 from agent.medical_agent import run_agent
 from utils.transcript_parser import SPEAKER_LABEL
 
-app = FastAPI(title="Medical Agent API")
+app = FastAPI(title="Medical Agent API", version="2.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+OUTPUT_DIR = Path(__file__).parent / "output"
+OUTPUT_DIR.mkdir(exist_ok=True)
+
+
+# ── Schemas ───────────────────────────────────────────────────────────────────
 
 class TranscriptTurn(BaseModel):
-    speaker: str  # "doctor" | "patient" | "family"
+    speaker: str  # "doctor" | "patient"
     text: str
 
 
@@ -39,21 +52,10 @@ class ProcessRequest(BaseModel):
     turns: List[TranscriptTurn]
 
 
-# ── Lazy-load Whisper để không chậm lúc khởi động server ─────────────────────
-_whisper_model = None
-
-def _get_whisper():
-    global _whisper_model
-    if _whisper_model is None:
-        try:
-            import whisper
-            _whisper_model = whisper.load_model("small")
-        except ImportError:
-            raise HTTPException(
-                status_code=503,
-                detail="openai-whisper chưa được cài. Chạy: pip install openai-whisper"
-            )
-    return _whisper_model
+class SaveRequest(BaseModel):
+    session_id: str
+    medical_record: dict
+    corrections: List[dict] = []
 
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
@@ -64,44 +66,65 @@ def health():
 
 
 @app.post("/api/transcribe")
-async def transcribe(audio: UploadFile = File(...)):
+async def transcribe(
+    audio: UploadFile = File(...),
+    patient_id: str = Form("BN-2026-00001"),
+    session_id: str = Form(...),
+    whisper_model: str = Form("small"),
+):
     """
-    Nhận file audio từ browser (webm/wav), chạy Whisper small,
-    trả về danh sách turns [{speaker, text}].
-    File audio bị xóa ngay sau khi transcribe (bảo mật).
+    Nhận audio từ browser → Whisper STT → LLM diarization → Medical Agent SOAP.
+    File audio bị xóa ngay sau STT (bảo mật bệnh nhân).
     """
     suffix = Path(audio.filename or "audio.webm").suffix or ".webm"
     tmp_path = None
 
     try:
-        # Lưu vào temp file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
             tmp.write(await audio.read())
             tmp_path = tmp.name
 
-        model = _get_whisper()
-        result = model.transcribe(tmp_path, language="vi", fp16=False)
+        # Bước 1: Whisper STT
+        from diarization.diarize import _transcribe_only
+        raw_text = _transcribe_only(tmp_path, whisper_model=whisper_model)
 
     finally:
-        # Xóa ngay sau STT (bảo mật bệnh nhân)
         if tmp_path and os.path.exists(tmp_path):
             os.remove(tmp_path)
 
-    # Tách text thành các turns theo dấu câu (mỗi câu = 1 turn)
-    import re
-    sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', result["text"].strip()) if s.strip()]
+    if not raw_text.strip():
+        raise HTTPException(
+            status_code=422,
+            detail="Không nhận được nội dung từ audio. Vui lòng ghi âm lại rõ hơn.",
+        )
 
-    if not sentences:
-        raise HTTPException(status_code=422, detail="Không nhận ra giọng nói. Hãy nói rõ hơn và thử lại.")
+    # Bước 2: LLM Diarization — GPT gán nhãn doctor/patient
+    from diarization.llm_diarization import diarize_with_llm
+    transcript_data = diarize_with_llm(
+        raw_text=raw_text,
+        session_id=session_id,
+        patient_id=patient_id,
+        recorded_at=datetime.now().isoformat(),
+    )
+    turns = transcript_data["turns"]
 
-    # Gán tất cả turns là "doctor" — diarization cần pyannote + HF token riêng
-    turns = [{"speaker": "doctor", "text": s} for s in sentences]
+    # Bước 3: Medical Agent → SOAP
+    transcript_str = "\n".join(
+        f"{'Bác sĩ' if t['speaker'] == 'doctor' else 'Bệnh nhân'}: {t['text']}"
+        for t in turns
+    )
+    record = run_agent(transcript_str, patient_id)
 
-    return {"turns": turns, "raw_text": result["text"]}
+    return {
+        "session_id": session_id,
+        "transcript": turns,
+        "medical_record": record.model_dump(),
+    }
 
 
 @app.post("/api/process")
 def process(req: ProcessRequest):
+    """Dùng cho Demo (Mock) mode: nhận turns sẵn → chạy Medical Agent."""
     if not req.turns:
         raise HTTPException(status_code=400, detail="Danh sách turns không được rỗng.")
 
@@ -116,3 +139,28 @@ def process(req: ProcessRequest):
         return record.model_dump()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/records/save")
+def save_record(body: SaveRequest):
+    """Lưu hồ sơ y tế cuối cùng (sau khi bác sĩ review) + correction log."""
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    record_file = OUTPUT_DIR / f"record_{body.session_id}_{timestamp}.json"
+
+    with open(record_file, "w", encoding="utf-8") as f:
+        json.dump(body.medical_record, f, ensure_ascii=False, indent=2)
+
+    if body.corrections:
+        log_file = OUTPUT_DIR / f"correction_log_{body.session_id}_{timestamp}.json"
+        with open(log_file, "w", encoding="utf-8") as f:
+            json.dump({
+                "session_id": body.session_id,
+                "saved_at": datetime.now().isoformat(),
+                "corrections": body.corrections,
+            }, f, ensure_ascii=False, indent=2)
+
+    return {
+        "status": "saved",
+        "record_file": str(record_file),
+        "corrections_count": len(body.corrections),
+    }

@@ -3,6 +3,15 @@ pydantic>=2.0.0
 python-dotenv>=1.0.0
 requests>=2.31.0
 fastapi>=0.111.0
-uvicorn>=0.29.0
+uvicorn[standard]>=0.29.0
 python-multipart>=0.0.9
 openai-whisper>=20231117
+
+# Thu âm trực tiếp từ microphone (CLI recorder)
+sounddevice>=0.4.6
+soundfile>=0.12.1
+numpy>=1.24.0
+
+# Diarization — Option 2: Whisper + pyannote (cần HF token)
+# Bỏ comment để cài khi cần:
+# pyannote.audio>=3.1.0

@@ -3,6 +3,7 @@ import { Check, Mic, Redo2, Save, Stethoscope, Undo2, X, XCircle } from 'lucide-
 import { Badge } from './components/ui/Badge'
 import { Button } from './components/ui/Button'
 import { Modal } from './components/ui/Modal'
+import { Skeleton } from './components/ui/Skeleton'
 import { Toast } from './components/ui/Toast'
 import { useClinicalScribe } from './context/ClinicalScribeContext'
 import { getReviewTokens } from './utils/reviewTokens'

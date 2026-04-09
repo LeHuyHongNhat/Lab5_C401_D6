@@ -1,0 +1,12 @@
+{
+  "session_id": "VNM-20260409-124044",
+  "patient_id": "BN-2026-00001",
+  "recorded_at": "2026-04-09T12:41:18.622470",
+  "diarization_method": "llm-fallback",
+  "turns": [
+    {
+      "speaker": "patient",
+      "text": "Xin chào!"
+    }
+  ]
+}

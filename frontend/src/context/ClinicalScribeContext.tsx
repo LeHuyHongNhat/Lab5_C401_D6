@@ -360,30 +360,27 @@ export function ClinicalScribeProvider({ children }: { children: ReactNode }) {
       setIsProcessing(true)
 
       try {
-        // Bước 1: Whisper transcribe
+        // Một lần gọi: Whisper STT → LLM Diarization → Medical Agent SOAP
+        const sessionId = `VNM-${Date.now()}`
         const formData = new FormData()
         formData.append('audio', blob, 'recording.webm')
-        const transcribeRes = await fetch('/api/transcribe', { method: 'POST', body: formData })
-        if (!transcribeRes.ok) {
-          const err = await transcribeRes.json().catch(() => ({ detail: transcribeRes.statusText }))
-          throw new Error(err.detail ?? 'Transcribe error')
-        }
-        const { turns } = await transcribeRes.json() as { turns: TranscriptTurn[] }
-        setTranscriptTurns(turns)
+        formData.append('patient_id', 'BN-2026-00001')
+        formData.append('session_id', sessionId)
+        formData.append('whisper_model', 'small')
 
-        // Bước 2: Medical agent → SOAP
-        const processRes = await fetch('/api/process', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ patient_id: 'BN-2026-00001', turns }),
-        })
-        if (!processRes.ok) {
-          const err = await processRes.json().catch(() => ({ detail: processRes.statusText }))
-          throw new Error(err.detail ?? 'Process error')
+        const res = await fetch('/api/transcribe', { method: 'POST', body: formData })
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ detail: res.statusText }))
+          throw new Error(err.detail ?? 'Lỗi server')
         }
-        const record: MedicalRecord = await processRes.json()
-        setMedicalRecordDraft(record)
-        resetSoapHistory(record)
+
+        const data = await res.json() as {
+          transcript: TranscriptTurn[]
+          medical_record: MedicalRecord
+        }
+        setTranscriptTurns(data.transcript)
+        setMedicalRecordDraft(data.medical_record)
+        resetSoapHistory(data.medical_record)
       } catch (e) {
         console.error('[handleStopRealRecording]', e)
       } finally {
