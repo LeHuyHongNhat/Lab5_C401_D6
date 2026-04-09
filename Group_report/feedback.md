@@ -1,4 +1,5 @@
 # Feedback các nhóm
+Mã nhóm hackathon: `Vinmec_E6`
 
 ## Nhóm `Vinmec_Z1` — Chatbot tư vấn đặt lịch khám
 
