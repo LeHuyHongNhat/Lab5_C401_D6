@@ -1,16 +1,11 @@
 """
-Diarization fallback: dùng LLM để gán nhãn speaker từ raw text.
+LLM Diarization: gán nhãn speaker (doctor/patient) từ raw text bằng LLM.
 
-Dùng khi:
-  - Không có GPU để chạy pyannote
-  - Muốn demo nhanh mà không cài thêm thư viện nặng
-  - STT output là plain text không có timestamp
-
-Luồng:
-  raw_text.txt (plain text, không biết ai nói)
+Luồng chính (gọi từ diarize.py):
+  raw_text (output của Whisper STT, chưa biết ai nói)
       │
       ▼
-  LLM gán nhãn [DOCTOR] / [PATIENT] theo ngữ cảnh
+  LLM gán nhãn [DOCTOR] / [PATIENT] theo ngữ cảnh y khoa
       │
       ▼
   Parse → turns: [{speaker, text}]
@@ -151,7 +146,7 @@ def diarize_with_llm(
         "session_id": session_id,
         "patient_id": patient_id,
         "recorded_at": recorded_at,
-        "diarization_method": "llm-fallback",
+        "diarization_method": "whisper+llm",
         "turns": turns,
     }
     return transcript

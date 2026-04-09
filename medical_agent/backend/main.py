@@ -81,7 +81,7 @@ async def transcribe(
     audio: UploadFile = File(..., description="File audio từ browser (WebM/Opus)"),
     patient_id: str = Form(..., description="Mã bệnh nhân nội bộ"),
     session_id: str = Form(..., description="ID phiên khám"),
-    whisper_model: str = Form("medium", description="Kích thước Whisper model"),
+    whisper_model: str = Form("small", description="Kích thước Whisper model"),
 ):
     """
     Nhận file audio từ browser, chạy STT → Diarization → Medical Agent.
