@@ -19,6 +19,8 @@
 
 - **Viết roadmap kỹ thuật thực tế (Section 8.1):** Mở rộng từ 3 option ngắn thành 4 hướng toàn diện: (A) cải thiện STT accuracy bằng fine-tune trên ground-truth từ correction log, (B) giảm chi phí LLM bằng GPT-4o-mini fine-tuned và long-term LLM local, (C) streaming STT để giảm latency xuống <15s, (D) bảng kiến trúc scale từ MVP → hệ thống 1,000+ bác sĩ với Kubernetes, FHIR, Prometheus, compliance HIPAA.
 
+- **Tích hợp FastAPI Backend — kết nối BE và FE chạy end-to-end:** Xây dựng `medical_agent/backend/main.py` với 3 endpoints chính: `GET /api/health`, `POST /api/transcribe` (nhận WebM audio từ browser → Whisper STT → LLM Diarization → Medical Agent → trả về transcript + MedicalRecord JSON), `POST /api/records/save` (lưu hồ sơ + correction log ra file). Cấu hình CORS cho phép frontend Vite (`localhost:5173`) gọi sang backend FastAPI (`localhost:8000`). Cập nhật `vite.config.ts` proxy `/api → localhost:8000` và viết `frontend/src/services/api.ts` để frontend có typed API calls — từ đó toàn bộ luồng ghi âm → xử lý → hiển thị SOAP draft chạy được end-to-end.
+
 - **Dọn dẹp kỹ thuật:** Xóa `whisper_diarization.py` (pyannote pipeline), refactor `diarize.py` bỏ các tham số không còn dùng (`method`, `hf_token`, `doctor_speaker`), cập nhật `recorder.py` và `config.py` cho nhất quán. Viết lại `.gitignore` đầy đủ theo nhóm (secrets, Python, Node, ML models, audio files, OS, IDE, testing).
 
 ---
