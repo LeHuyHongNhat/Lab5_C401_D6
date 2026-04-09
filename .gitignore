@@ -1,43 +1,58 @@
-# Environment
-.env
-.env.local
-.env.*.local
+# ------------------------------
+# OS / Editor
+# ------------------------------
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
 
+# ------------------------------
 # Python
+# ------------------------------
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
-.Python
-*.egg-info/
-dist/
-build/
-*.egg
-.eggs/
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
 
 # Virtual environments
 .venv/
 venv/
 env/
-ENV/
 
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb
+# Secrets / local config
+.env
+.env.*
+!.env.example
 
-# OS
-.DS_Store
-Thumbs.db
+# ------------------------------
+# Node / Frontend
+# ------------------------------
+node_modules/
+frontend/node_modules/
 
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Agent output (generated files, not source)
-medical_agent/output/*.json
+# Build artifacts
+build/
+dist/
+frontend/dist/
+frontend/dist-ssr/
+*.tsbuildinfo
 
 # Logs
-*.log
 logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Local override files
+*.local
