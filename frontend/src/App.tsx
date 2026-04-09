@@ -15,6 +15,7 @@ function App() {
   const {
     showToast,
     isRecording,
+    isRealRecording,
     isProcessing,
     showSoap,
     transcriptTurns,
@@ -25,6 +26,8 @@ function App() {
     setShowToast,
     handleStartRecording,
     handleStopAndProcess,
+    handleStartRealRecording,
+    handleStopRealRecording,
     updatePatientField,
     updateVisitField,
     updateKhamLamSangField,
@@ -189,24 +192,44 @@ function App() {
                 <span className="text-xs font-medium text-gray-500 bg-white px-2 py-1 rounded shadow-sm border border-gray-200">{recordingTime}</span>
               </div>
               
-              <div>
-                {isRecording ? (
-                  <Button variant="danger" iconLeft={<Mic size={16} />} onClick={handleStopAndProcess} className="w-full shadow-sm animate-pulse">
-                    Kết thúc & Trích xuất
+              <div className="flex gap-2">
+                {isRealRecording ? (
+                  <Button variant="danger" iconLeft={<Mic size={16} />} onClick={handleStopRealRecording} className="flex-1 shadow-sm animate-pulse">
+                    Dừng (Whisper)
+                  </Button>
+                ) : isRecording ? (
+                  <Button variant="danger" iconLeft={<Mic size={16} />} onClick={handleStopAndProcess} className="flex-1 shadow-sm animate-pulse">
+                    Dừng (Demo)
                   </Button>
                 ) : (
-                  <Button
-                    variant="secondary"
-                    iconLeft={<Mic size={16} />}
-                    onClick={() => {
-                      setSelectedHighlightStart(null)
-                      setHighlightDecisions({})
-                      handleStartRecording()
-                    }}
-                    className="w-full shadow-sm bg-white hover:bg-gray-50"
-                  >
-                    Bắt đầu Ghi âm
-                  </Button>
+                  <>
+                    <Button
+                      variant="primary"
+                      iconLeft={<Mic size={16} />}
+                      onClick={() => {
+                        setSelectedHighlightStart(null)
+                        setHighlightDecisions({})
+                        handleStartRealRecording()
+                      }}
+                      className="flex-1 shadow-sm"
+                      disabled={isProcessing}
+                    >
+                      Ghi âm (Whisper)
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      iconLeft={<Mic size={16} />}
+                      onClick={() => {
+                        setSelectedHighlightStart(null)
+                        setHighlightDecisions({})
+                        handleStartRecording()
+                      }}
+                      className="flex-1 shadow-sm bg-white hover:bg-gray-50"
+                      disabled={isProcessing}
+                    >
+                      Demo (Mock)
+                    </Button>
+                  </>
                 )}
               </div>
             </div>
@@ -214,7 +237,7 @@ function App() {
             <div ref={transcriptRef} className="flex-1 space-y-3 overflow-y-auto p-4 text-sm bg-white/30">
               {transcriptTurns.length === 0 ? (
                 <div className="flex h-full min-h-32 items-center justify-center rounded-lg border border-dashed border-gray-200 bg-white p-4 text-center text-gray-500">
-                  Bấm “Bắt đầu Ghi âm” phía trên để bắt đầu hội thoại
+                  Bấm “Ghi âm (Whisper)” hoặc “Demo (Mock)” để bắt đầu
                 </div>
               ) : null}
 
@@ -230,10 +253,15 @@ function App() {
                 </p>
               ))}
 
-              {isRecording ? (
+              {isRealRecording ? (
                 <p className="inline-flex items-center gap-2 rounded-lg bg-red-50 border border-red-100 px-3 py-2 text-xs font-medium text-red-700 shadow-sm">
                   <span className="blink-dot inline-block h-2.5 w-2.5 rounded-full bg-red-500 shadow-sm" />
-                  Đang ghi âm... (AI đang nghe)
+                  Đang ghi âm thật... (Whisper sẽ xử lý khi dừng)
+                </p>
+              ) : isRecording ? (
+                <p className="inline-flex items-center gap-2 rounded-lg bg-orange-50 border border-orange-100 px-3 py-2 text-xs font-medium text-orange-700 shadow-sm">
+                  <span className="blink-dot inline-block h-2.5 w-2.5 rounded-full bg-orange-400 shadow-sm" />
+                  Đang chạy demo (Mock transcript)
                 </p>
               ) : null}
             </div>

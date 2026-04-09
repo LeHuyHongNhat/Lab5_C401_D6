@@ -59,6 +59,7 @@ const initialMedicalRecord: MedicalRecord = {
 interface ClinicalScribeContextValue {
   showToast: boolean
   isRecording: boolean
+  isRealRecording: boolean
   isProcessing: boolean
   showSoap: boolean
   transcriptTurns: TranscriptTurn[]
@@ -69,6 +70,8 @@ interface ClinicalScribeContextValue {
   setShowToast: (open: boolean) => void
   handleStartRecording: () => void
   handleStopAndProcess: () => void
+  handleStartRealRecording: () => void
+  handleStopRealRecording: () => void
   updatePatientField: (field: keyof PatientInfo, value: string) => void
   updateVisitField: (field: keyof VisitInfo, value: string | string[] | KhamLamSang) => void
   updateKhamLamSangField: (field: keyof KhamLamSang, value: string) => void
@@ -83,6 +86,7 @@ const ClinicalScribeContext = createContext<ClinicalScribeContextValue | undefin
 export function ClinicalScribeProvider({ children }: { children: ReactNode }) {
   const [showToast, setShowToast] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
+  const [isRealRecording, setIsRealRecording] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [transcriptTurns, setTranscriptTurns] = useState<TranscriptTurn[]>([])
   const [medicalRecordDraft, setMedicalRecordDraft] = useState<MedicalRecord>(initialMedicalRecord)
@@ -94,6 +98,8 @@ export function ClinicalScribeProvider({ children }: { children: ReactNode }) {
   const soapHistoryIndexRef = useRef(0)
   const recordingIntervalRef = useRef<number | null>(null)
   const processingTimeoutRef = useRef<number | null>(null)
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const audioChunksRef = useRef<Blob[]>([])
 
   const recordingTime = useMemo(() => {
     const seconds = transcriptTurns.length * 8
@@ -160,23 +166,36 @@ export function ClinicalScribeProvider({ children }: { children: ReactNode }) {
     setIsRecording(true)
   }, [])
 
-  const handleStopAndProcess = useCallback(() => {
+  const handleStopAndProcess = useCallback(async () => {
     setIsRecording(false)
     setIsProcessing(true)
 
-    if (processingTimeoutRef.current) {
-      window.clearTimeout(processingTimeoutRef.current)
-      processingTimeoutRef.current = null
-    }
+    try {
+      const response = await fetch('/api/process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patient_id: 'BN-2026-00001',
+          turns: transcriptTurns,
+        }),
+      })
 
-    processingTimeoutRef.current = window.setTimeout(() => {
-      // Simulate AI generating data - just keep initial for mock
-      setMedicalRecordDraft((prev) => ({ ...prev }))
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ detail: response.statusText }))
+        throw new Error(err.detail ?? 'API error')
+      }
+
+      const record: MedicalRecord = await response.json()
+      setMedicalRecordDraft(record)
+      resetSoapHistory(record)
+    } catch (e) {
+      console.error('[handleStopAndProcess] API call failed:', e)
+      // Fallback: giữ nguyên data cũ, vẫn hiện SOAP để không block UI
+    } finally {
       setShowSoap(true)
       setIsProcessing(false)
-      processingTimeoutRef.current = null
-    }, 1500)
-  }, [])
+    }
+  }, [transcriptTurns, resetSoapHistory])
 
   const updatePatientField = useCallback(
     (field: keyof PatientInfo, value: string) => {
@@ -308,10 +327,79 @@ export function ClinicalScribeProvider({ children }: { children: ReactNode }) {
     syncHistoryFlags()
   }, [syncHistoryFlags])
 
+  const handleStartRealRecording = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      audioChunksRef.current = []
+      const mr = new MediaRecorder(stream)
+      mediaRecorderRef.current = mr
+
+      mr.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data)
+      }
+
+      mr.start()
+      setTranscriptTurns([])
+      setIsRealRecording(true)
+    } catch {
+      alert('Không thể truy cập microphone. Hãy cho phép quyền ghi âm trong trình duyệt.')
+    }
+  }, [])
+
+  const handleStopRealRecording = useCallback(() => {
+    const mr = mediaRecorderRef.current
+    if (!mr) return
+
+    mr.onstop = async () => {
+      const blob = new Blob(audioChunksRef.current, { type: mr.mimeType || 'audio/webm' })
+      mr.stream.getTracks().forEach((t) => t.stop())
+      mediaRecorderRef.current = null
+      audioChunksRef.current = []
+
+      setIsRealRecording(false)
+      setIsProcessing(true)
+
+      try {
+        // Bước 1: Whisper transcribe
+        const formData = new FormData()
+        formData.append('audio', blob, 'recording.webm')
+        const transcribeRes = await fetch('/api/transcribe', { method: 'POST', body: formData })
+        if (!transcribeRes.ok) {
+          const err = await transcribeRes.json().catch(() => ({ detail: transcribeRes.statusText }))
+          throw new Error(err.detail ?? 'Transcribe error')
+        }
+        const { turns } = await transcribeRes.json() as { turns: TranscriptTurn[] }
+        setTranscriptTurns(turns)
+
+        // Bước 2: Medical agent → SOAP
+        const processRes = await fetch('/api/process', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ patient_id: 'BN-2026-00001', turns }),
+        })
+        if (!processRes.ok) {
+          const err = await processRes.json().catch(() => ({ detail: processRes.statusText }))
+          throw new Error(err.detail ?? 'Process error')
+        }
+        const record: MedicalRecord = await processRes.json()
+        setMedicalRecordDraft(record)
+        resetSoapHistory(record)
+      } catch (e) {
+        console.error('[handleStopRealRecording]', e)
+      } finally {
+        setShowSoap(true)
+        setIsProcessing(false)
+      }
+    }
+
+    mr.stop()
+  }, [resetSoapHistory])
+
   const value = useMemo<ClinicalScribeContextValue>(
     () => ({
       showToast,
       isRecording,
+      isRealRecording,
       isProcessing,
       showSoap,
       transcriptTurns,
@@ -322,6 +410,8 @@ export function ClinicalScribeProvider({ children }: { children: ReactNode }) {
       setShowToast,
       handleStartRecording,
       handleStopAndProcess,
+      handleStartRealRecording,
+      handleStopRealRecording,
       updatePatientField,
       updateVisitField,
       updateKhamLamSangField,
@@ -335,8 +425,11 @@ export function ClinicalScribeProvider({ children }: { children: ReactNode }) {
       canUndo,
       handleCancelCase,
       handleStartRecording,
+      handleStartRealRecording,
       handleStopAndProcess,
+      handleStopRealRecording,
       isProcessing,
+      isRealRecording,
       isRecording,
       medicalRecordDraft,
       recordingTime,
