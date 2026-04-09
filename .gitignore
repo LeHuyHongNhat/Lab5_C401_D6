@@ -1,72 +1,116 @@
-# ------------------------------
-# OS / Editor
-# ------------------------------
-.DS_Store
-Thumbs.db
-.vscode/
-!.vscode/extensions.json
-.idea/
-*.swp
-*.swo
+# ─── Environment & Secrets ────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.cert
+secrets/
 
-# ------------------------------
-# Python
-# ------------------------------
+# ─── Python ───────────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
-*$py.class
 *.pyo
 *.pyd
+*.so
 .Python
 *.egg-info/
 *.egg
 .eggs/
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.coverage
-coverage.xml
-htmlcov/
+dist/
+build/
+wheels/
+sdist/
+MANIFEST
 
-# Virtual environments
+# ─── Virtual environments ─────────────────────────────────────────────────────
 .venv/
 venv/
 env/
 ENV/
+.virtualenv/
+Pipfile.lock
+poetry.lock
 
-# Secrets / local config
-.env
-.env.*
-!.env.example
-
-# ------------------------------
-# Node / Frontend
-# ------------------------------
+# ─── Node / Frontend ──────────────────────────────────────────────────────────
 node_modules/
-frontend/node_modules/
-
-# Build artifacts
-build/
 dist/
-frontend/dist/
-frontend/dist-ssr/
+.next/
+.nuxt/
+.cache/
 *.tsbuildinfo
-
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb
-
-# Agent output (generated files, not source)
-medical_agent/output/*.json
-
-# Logs
-logs/
-*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
-# Local override files
-*.local
+# ─── Jupyter ──────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ─── ML / AI Models & Data ────────────────────────────────────────────────────
+# Whisper model cache
+~/.cache/whisper/
+*.pt
+*.bin
+*.safetensors
+
+# HuggingFace cache
+~/.cache/huggingface/
+*.gguf
+
+# Audio files (có thể lớn, không cần track)
+audio/
+*.wav
+*.mp3
+*.m4a
+*.flac
+*.ogg
+*.webm
+*.mp4
+
+# ─── Medical Agent — Generated Output ────────────────────────────────────────
+medical_agent/output/*.json
+medical_agent/audio/
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+logs/
+*.log.*
+
+# ─── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# ─── IDE ──────────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.history/
+
+# ─── Testing & Coverage ───────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+.hypothesis/
+
+# ─── Temp & Misc ──────────────────────────────────────────────────────────────
+tmp/
+temp/
+*.tmp
+*.bak
+*.orig
+*.rej
