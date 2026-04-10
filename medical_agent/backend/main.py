@@ -29,6 +29,7 @@ from agent.medical_agent import run_agent
 from agent.schemas import MedicalRecord
 from diarization.diarize import _transcribe_with_whisper
 from diarization.llm_diarization import diarize_with_llm
+from tools.get_patient_info import get_patient_info
 
 # ── App setup ────────────────────────────────────────────────────────────────
 
@@ -76,6 +77,15 @@ def health():
     return {"status": "ok", "timestamp": datetime.now().isoformat()}
 
 
+@app.get("/api/patients/{patient_id}")
+def get_patient(patient_id: str):
+    """Lấy thông tin bệnh nhân theo mã nội bộ."""
+    data = get_patient_info(patient_id)
+    if "error" in data:
+        raise HTTPException(status_code=404, detail=data["error"])
+    return data
+
+
 @app.post("/api/transcribe", response_model=TranscribeResponse)
 async def transcribe(
     audio: UploadFile = File(..., description="File audio từ browser (WebM/Opus)"),
@@ -105,12 +115,18 @@ async def transcribe(
             )
 
         # ── Bước 2: LLM Diarization ──────────────────────────────────────
-        transcript_data = diarize_with_llm(
-            raw_text=raw_text,
-            session_id=session_id,
-            patient_id=patient_id,
-            recorded_at=datetime.now().isoformat(),
-        )
+        try:
+            transcript_data = diarize_with_llm(
+                raw_text=raw_text,
+                session_id=session_id,
+                patient_id=patient_id,
+                recorded_at=datetime.now().isoformat(),
+            )
+        except ValueError:
+            raise HTTPException(
+                status_code=422,
+                detail="Audio không chứa hội thoại bác sĩ - bệnh nhân. Vui lòng ghi âm lại.",
+            )
         turns = transcript_data["turns"]
 
         # ── Bước 3: Medical Agent ────────────────────────────────────────

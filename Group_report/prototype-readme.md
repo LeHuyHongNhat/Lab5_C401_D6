@@ -22,7 +22,7 @@ Vinmec Clinical Scribe AI là hệ thống hỗ trợ bác sĩ tự động hóa
 | Tài nguyên     | Link                                                         |
 | -------------- | ------------------------------------------------------------ |
 | GitHub repo    | *(để trống)*                                                 |
-| Demo video     | [https://youtu.be/InomoDHN8N4](https://youtu.be/InomoDHN8N4) |
+| Demo video     | [https://youtu.be/TBPjYgMtFm8](https://youtu.be/TBPjYgMtFm8) |
 | Deployed app   | *(để trống)*                                                 |
 | Figma / Poster | *(để trống)*                                                 |
 
