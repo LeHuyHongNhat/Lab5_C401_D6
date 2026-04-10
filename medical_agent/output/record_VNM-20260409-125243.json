@@ -1,0 +1,22 @@
+{
+  "patient": {
+    "ho_ten": "Nguyễn Văn A",
+    "gioi_tinh": "Nam",
+    "ngay_sinh": "1990-05-12",
+    "dia_chi": "123 Nguyễn Trãi, Q.1, TP.HCM",
+    "patient_id": null
+  },
+  "visit": {
+    "ngay_kham": null,
+    "benh_su": "Tiền sử tăng huyết áp độ 1 (2024). Không dị ứng thuốc.",
+    "ly_do_kham": "Đau đầu, mất ngủ 2 tuần nay.",
+    "trieu_chung": "Đau đầu cả 2 bên, đặc biệt vào buổi chiều và tối; mất ngủ; lo lắng; buồn chồn; không yên.",
+    "kham_lam_sang": null,
+    "xet_nghiem": null,
+    "chan_doan": "Rối loạn lo âu, mất ngủ",
+    "chan_doan_icd": "F41.9, G47.0",
+    "huong_dieu_tri": null,
+    "dan_do": null,
+    "ngay_tai_kham": null
+  }
+}

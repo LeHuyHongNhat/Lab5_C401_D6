@@ -27,7 +27,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from agent.medical_agent import run_agent
 from agent.schemas import MedicalRecord
-from diarization.diarize import _transcribe_only
+from diarization.diarize import _transcribe_with_whisper
 from diarization.llm_diarization import diarize_with_llm
 
 # ── App setup ────────────────────────────────────────────────────────────────
@@ -96,7 +96,7 @@ async def transcribe(
 
     try:
         # ── Bước 1: Whisper STT ───────────────────────────────────────────
-        raw_text = _transcribe_only(tmp_path, whisper_model=whisper_model)
+        raw_text = _transcribe_with_whisper(tmp_path, whisper_model=whisper_model)
 
         if not raw_text.strip():
             raise HTTPException(

@@ -1,0 +1,31 @@
+{
+  "patient": {
+    "ho_ten": "Nguyễn Văn A",
+    "gioi_tinh": "Nam",
+    "ngay_sinh": "1990-05-12",
+    "dia_chi": "123 Nguyễn Trãi, Q.1, TP.HCM",
+    "cccd": "079090012345"
+  },
+  "visit": {
+    "ngay_kham": null,
+    "benh_su": "Tiền sử tăng huyết áp độ 1 (2024). Không dị ứng thuốc.",
+    "ly_do_kham": "Đau đầu và mất ngủ khoảng 2 tuần, kèm theo lo lắng, bồn chồn.",
+    "trieu_chung": "Đau cả hai bên thái dương, đặc biệt buổi chiều tối. Khó vào giấc ngủ, suy nghĩ lung tung.",
+    "kham_lam_sang": {
+      "nhan_xet_chung": "Tỉnh táo, tiếp xúc tốt.",
+      "cam_xuc": "Lo âu nhẹ.",
+      "tu_duy": "Mạch lạc, không có ý tưởng bất thường.",
+      "tri_giac": "Không có ảo giác.",
+      "hanh_vi": "Hợp tác."
+    },
+    "xet_nghiem": [
+      "Công thức máu",
+      "Điện giải đồ"
+    ],
+    "chan_doan": "Rối loạn lo âu lan toả",
+    "chan_doan_icd": "F41.1",
+    "huong_dieu_tri": "Kết hợp liệu pháp nhận thức hành vi và thuốc nhóm SSRI liều thấp.",
+    "dan_do": "Tránh căng thẳng, ngủ đúng giờ, hạn chế cà phê và điện thoại trước khi ngủ.",
+    "ngay_tai_kham": "2024-04-23"
+  }
+}
